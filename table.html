@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRUD Táblázat</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .form-container {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+    }
+    .search-container {
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Web-programozás-1 Beadandó</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="index.html">Kezdőlap</a></li>
+      <li class="active"><a href="tabla.html">Táblázat</a></li>
+      <li><a href="html5.html">HTML5</a></li>
+      <li><a href="chart.html">Chart</a></li>
+      <li><a href="ajax.html">AJAX</a></li>
+      <li><a href="oojs.html">OOJS</a></li>
+      <li><a href="jatek1.html">React</a></li>
+    </ul>
+  </nav>
+
+  <aside>
+    <p>Oldalsáv tartalom</p>
+  </aside>
+
+  <div class="content">
+    <h2>CRUD Táblázat</h2>
+
+    <div class="form-container">
+      <form id="dataForm">
+        <input type="text" id="name" placeholder="Név" required minlength="2" maxlength="30" />
+        <input type="number" id="age" placeholder="Kor" required min="0" max="120" />
+        <input type="text" id="city" placeholder="Város" required minlength="2" maxlength="30" />
+        <input type="email" id="email" placeholder="Email" required />
+        <button type="submit">Hozzáadás</button>
+      </form>
+      <p class="error" id="errorMsg"></p>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Keresés..." />
+    </div>
+
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">Név</th>
+          <th onclick="sortTable(1)">Kor</th>
+          <th onclick="sortTable(2)">Város</th>
+          <th onclick="sortTable(3)">Email</th>
+          <th>Műveletek</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>Made By: Wéber Marcell BW2OK8, Veres István T86ODL</p>
+  </footer>
+
+  <script>
+    const form = document.getElementById("dataForm");
+    const tableBody = document.getElementById("dataTable").querySelector("tbody");
+    const searchInput = document.getElementById("searchInput");
+    const errorMsg = document.getElementById("errorMsg");
+    let editingRow = null;
+    let sortDirection = [true, true, true, true]; // kezdetben minden növekvő
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      
+      const name = document.getElementById("name").value.trim();
+      const age = document.getElementById("age").value.trim();
+      const city = document.getElementById("city").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!name || !age || !city || !email) {
+        errorMsg.textContent = "Minden mező kitöltése kötelező!";
+        return;
+      }
+      if (name.length < 2 || name.length > 30) {
+        errorMsg.textContent = "A név 2-30 karakter hosszú lehet!";
+        return;
+      }
+      if (age < 0 || age > 120) {
+        errorMsg.textContent = "Az életkor 0-120 között lehet!";
+        return;
+      }
+      if (city.length < 2 || city.length > 30) {
+        errorMsg.textContent = "A város neve 2-30 karakter hosszú lehet!";
+        return;
+      }
+      if (!email.includes("@") || !email.includes(".")) {
+        errorMsg.textContent = "Érvénytelen email cím!";
+        return;
+      }
+
+      errorMsg.textContent = "";
+
+      if (editingRow) {
+        editingRow.cells[0].textContent = name;
+        editingRow.cells[1].textContent = age;
+        editingRow.cells[2].textContent = city;
+        editingRow.cells[3].textContent = email;
+        editingRow = null;
+      } else {
+        const row = tableBody.insertRow();
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${age}</td>
+          <td>${city}</td>
+          <td>${email}</td>
+          <td>
+            <button onclick="editRow(this)">Szerkeszt</button>
+            <button onclick="deleteRow(this)">Töröl</button>
+          </td>
+        `;
+      }
+      form.reset();
+    });
+
+    function deleteRow(btn) {
+      const row = btn.closest("tr");
+      tableBody.removeChild(row);
+    }
+
+    function editRow(btn) {
+      editingRow = btn.closest("tr");
+      document.getElementById("name").value = editingRow.cells[0].textContent;
+      document.getElementById("age").value = editingRow.cells[1].textContent;
+      document.getElementById("city").value = editingRow.cells[2].textContent;
+      document.getElementById("email").value = editingRow.cells[3].textContent;
+    }
+
+    function sortTable(columnIndex) {
+      const rows = Array.from(tableBody.rows);
+      const ascending = sortDirection[columnIndex];
+      const sortedRows = rows.sort((a, b) => {
+        const aText = a.cells[columnIndex].textContent.trim();
+        const bText = b.cells[columnIndex].textContent.trim();
+        
+        if (columnIndex === 1) {
+          return ascending ? aText - bText : bText - aText;
+        }
+        return ascending ? aText.localeCompare(bText, "hu") : bText.localeCompare(aText, "hu");
+      });
+
+      tableBody.innerHTML = "";
+      sortedRows.forEach(row => tableBody.appendChild(row));
+      sortDirection[columnIndex] = !ascending;
+    }
+
+    searchInput.addEventListener("input", function () {
+      const value = this.value.toLowerCase();
+      Array.from(tableBody.rows).forEach(row => {
+        const match = Array.from(row.cells).some(cell =>
+          cell.textContent.toLowerCase().includes(value)
+        );
+        row.style.display = match ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>

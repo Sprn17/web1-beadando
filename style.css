@@ -1,0 +1,59 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4faff;
+  margin: 0;
+  padding: 0;
+}
+
+header, footer {
+  background-color: #e0f0ff;  /* Világoskék háttér */
+  color: #333;
+  padding: 1rem;
+  text-align: center;
+}
+
+nav {
+  background-color: #007acc;  /* Sötétkék navigáció */
+}
+
+nav ul {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+
+nav li {
+  margin: 0;
+}
+
+nav a {
+  display: block;
+  padding: 1rem;
+  color: white;
+  text-decoration: none;
+}
+
+nav .active a,
+nav a:hover {
+  background-color: #005f99;  /* Sötétkék hover effekt */
+}
+
+aside {
+  padding: 1rem;
+  background-color: #e0f0ff;  /* Világoskék háttér */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+footer {
+  margin-top: 2rem;
+}
